@@ -48,10 +48,10 @@ PARAMS = {
     "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 1e-12,       # Miller compensation capacitor (F)
+    "Cc": 0.5e-12,     # Miller compensation capacitor (F) — halved for GBW
 
     # Bias
-    "Ibias": 20e-6,    # First stage bias current (A)
+    "Ibias": 40e-6,    # First stage bias current (A) — doubled for gm
     "Ibias2": 100e-6,  # Second stage bias current (A)
 }
 
