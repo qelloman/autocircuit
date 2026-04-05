@@ -28,31 +28,31 @@ from prepare import (
 
 PARAMS = {
     # First stage: differential input pair (NMOS)
-    "M1_W": 4,         # Input diff pair width (um)
-    "M1_L": 2.0,       # Input diff pair length (um) — long for max ro
+    "M1_W": 10,        # Input diff pair width (um) — very wide for max gm
+    "M1_L": 0.5,       # Input diff pair length (um)
 
     # First stage: active load (PMOS current mirror)
-    "M3_W": 8,         # PMOS load width (um)
-    "M3_L": 2.0,       # PMOS load length (um) — long for max ro
+    "M3_W": 20,        # PMOS load width (um) — wide to match
+    "M3_L": 0.5,       # PMOS load length (um)
 
     # Tail current source
-    "M5_W": 2,         # Tail current source width (um)
-    "M5_L": 2,         # Tail current source length (um) — long for high Rout
+    "M5_W": 4,         # Tail current source width (um) — wider for high current
+    "M5_L": 0.5,       # Tail current source length (um)
 
     # Second stage: NMOS driver
-    "M6_W": 5,         # Second stage NMOS width (um)
-    "M6_L": 0.5,       # Second stage NMOS length (um) — longer for gain
+    "M6_W": 20,        # Second stage NMOS width (um) — wide for fast 2nd stage
+    "M6_L": 0.15,      # Second stage NMOS length (um) — min L for speed
 
     # Second stage: PMOS load (sizing for reference, current set by Ibias2)
     "M7_W": 10,        # Second stage PMOS width (um) — unused with ideal I7
     "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 1e-12,       # Miller compensation capacitor (F)
+    "Cc": 0.2e-12,     # Miller compensation capacitor (F) — minimal Cc
 
     # Bias
-    "Ibias": 10e-6,    # First stage bias current (A) — minimal for low power
-    "Ibias2": 50e-6,   # Second stage bias current (A) — halved for low power
+    "Ibias": 80e-6,    # First stage bias current (A) — high for max gm
+    "Ibias2": 200e-6,  # Second stage bias current (A) — high for fast 2nd stage
 }
 
 # ---------------------------------------------------------------------------
