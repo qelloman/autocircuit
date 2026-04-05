@@ -40,19 +40,19 @@ PARAMS = {
     "M5_L": 3,         # Tail current source length (um) — long
 
     # Second stage: NMOS driver
-    "M6_W": 5,         # Second stage NMOS width (um)
-    "M6_L": 0.5,       # Second stage NMOS length (um)
+    "M6_W": 8,         # Second stage NMOS width (um) — wider for gm6
+    "M6_L": 1.0,       # Second stage NMOS length (um) — longer for 2nd stage gain
 
     # Second stage: PMOS load (sizing for reference, current set by Ibias2)
     "M7_W": 10,        # Second stage PMOS width (um) — unused with ideal I7
     "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 1.5e-12,     # Miller compensation capacitor (F)
+    "Cc": 2e-12,       # Miller compensation capacitor (F) — more Cc for long-L stability
 
     # Bias
-    "Ibias": 10e-6,    # First stage bias current (A) — low for power
-    "Ibias2": 50e-6,   # Second stage bias current (A)
+    "Ibias": 7e-6,     # First stage bias current (A) — very low for high gm/Id
+    "Ibias2": 40e-6,   # Second stage bias current (A) — reduced
 }
 
 # ---------------------------------------------------------------------------
