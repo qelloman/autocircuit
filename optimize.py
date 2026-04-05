@@ -51,8 +51,8 @@ PARAMS = {
     "Cc": 2e-12,       # Miller compensation capacitor (F) — large for stability
 
     # Bias
-    "Ibias": 3e-6,     # First stage bias current (A) — ultra-low
-    "Ibias2": 20e-6,   # Second stage bias current (A) — ultra-low
+    "Ibias": 2e-6,     # First stage bias current (A) — extreme low
+    "Ibias2": 10e-6,   # Second stage bias current (A) — extreme low
 }
 
 # ---------------------------------------------------------------------------
