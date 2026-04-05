@@ -16,14 +16,15 @@ The repo has three files that matter:
 
 The circuit under optimization is a **two-stage Miller-compensated CMOS Op-Amp** using the **SkyWater SKY130 130nm PDK** — a real open-source process with production-grade BSIM4 models.
 
-Unlike autoresearch's single scalar metric (val_bpb), autocircuit optimizes **multiple objectives simultaneously** via Pareto front exploration:
+Unlike autoresearch's single scalar metric (val_bpb), autocircuit tracks **5 performance metrics** and optimizes a **2D Pareto front**:
 
-| Metric | Direction | Description |
-|--------|-----------|-------------|
-| Gain | maximize | DC open-loop gain (dB) |
-| GBW | maximize | Unity-gain bandwidth (Hz) |
-| Phase Margin | maximize | Stability metric (degrees, must be > 45°) |
-| Power | minimize | Supply power consumption (W) |
+| Metric | Role | Description |
+|--------|------|-------------|
+| Gain | tracked | DC open-loop gain (dB) |
+| Bandwidth | tracked | -3dB bandwidth (Hz) |
+| GBW | **Pareto objective (maximize)** | Unity-gain bandwidth (Hz) |
+| Phase Margin | **constraint (≥ 45°)** | Stability metric (degrees) |
+| Power | **Pareto objective (minimize)** | Supply power consumption (W) |
 
 ## Quick start
 
@@ -31,7 +32,7 @@ Unlike autoresearch's single scalar metric (val_bpb), autocircuit optimizes **mu
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/autocircuit.git
+git clone https://github.com/qelloman/autocircuit.git
 cd autocircuit
 
 # 2. Build the Docker image (~1 min, downloads SKY130 PDK automatically)
@@ -45,10 +46,11 @@ You should see output like:
 
 ```
 ---
-gain_db:       68.81
-gbw_hz:        1.41e+07
-pm_deg:        110.86
-power_w:       8.35e-05
+gain_db:       72.77
+bw_hz:         1.64e+03
+gbw_hz:        6.61e+06
+pm_deg:        48.47
+power_w:       6.20e-05
 is_pareto:     True
 pareto_size:   1
 ---
@@ -64,7 +66,7 @@ Spin up your Claude Code / Codex / Cursor agent in this repo, then prompt:
 Hi, have a look at program.md and let's kick off a new experiment! Let's do the setup first.
 ```
 
-The agent will read `program.md`, create a branch, run the baseline, and start iterating — modifying transistor sizes, running simulations, analyzing results, and expanding the Pareto front. Each experiment takes seconds (not minutes), so the agent can run hundreds of experiments per hour.
+The agent will read `program.md`, create a branch, run the baseline, and start iterating — modifying transistor sizes, running simulations, analyzing results, and expanding the Pareto front. Each run is capped at **100 experiments**. After completion, generate the Pareto plot with `uv run python plot.py`.
 
 ## What the Docker image contains
 
@@ -94,6 +96,7 @@ Host: reads stdout + pareto.json
 ```
 prepare.py                — ngspice wrapper + Pareto front (do not modify)
 optimize.py               — circuit parameters (agent modifies this)
+plot.py                   — Pareto front visualization (GBW vs Power)
 circuits/
   two_stage_opamp.sp      — SPICE netlist template (SKY130 PDK)
 program.md                — agent instructions
