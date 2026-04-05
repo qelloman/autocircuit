@@ -73,40 +73,47 @@ grep "^gain_db:\|^gbw_hz:\|^pm_deg:\|^power_w:\|^is_pareto:" run.log
 
 When an experiment is done, log it to `results.tsv` (tab-separated, NOT comma-separated).
 
-The TSV has a header row and 7 columns:
+The TSV has a header row and 9 columns:
 
 ```
-commit	gain_db	gbw_hz	pm_deg	power_mw	is_pareto	status	description
+commit	gain_db	bw_hz	gbw_hz	pm_deg	power_mw	is_pareto	status	description
 ```
 
 1. git commit hash (short, 7 chars)
 2. gain_db (e.g. 52.30) — use 0.00 for crashes
-3. gbw_hz (e.g. 1.20e+07) — use 0 for crashes
-4. pm_deg (e.g. 62.50) — use 0.00 for crashes
-5. power_mw (e.g. 0.48 — convert from watts by * 1000)
-6. is_pareto: True or False
-7. status: `keep`, `discard`, or `crash`
-8. short text description of what this experiment tried
+3. bw_hz (e.g. 1.64e+03) — -3dB bandwidth, use 0 for crashes
+4. gbw_hz (e.g. 1.20e+07) — use 0 for crashes
+5. pm_deg (e.g. 62.50) — use 0.00 for crashes
+6. power_mw (e.g. 0.062 — convert from watts by * 1000)
+7. is_pareto: True or False
+8. status: `keep`, `discard`, or `crash`
+9. short text description of what this experiment tried
 
 ## The experiment loop
 
 The experiment runs on a dedicated branch (e.g. `autocircuit/apr4`).
 
-LOOP FOREVER:
+RUN 100 EXPERIMENTS (no more, no less):
 
 1. Look at the current Pareto front: `cat pareto.json` or check `results.tsv`
 2. Identify a promising direction:
-   - Can we push gain higher without losing too much BW?
-   - Can we reduce power while maintaining gain/BW?
+   - Can we push GBW higher without too much power?
+   - Can we reduce power while maintaining GBW?
    - Is there a region of the Pareto front that's sparse?
 3. Modify `optimize.py` PARAMS with your hypothesis
 4. git commit
 5. Run: `docker run --rm -v $(pwd):/work autocircuit > run.log 2>&1`
-6. Read results: `grep "^gain_db:\|^gbw_hz:\|^pm_deg:\|^power_w:\|^is_pareto:" run.log`
+6. Read results: `grep "^gain_db:\|^bw_hz:\|^gbw_hz:\|^pm_deg:\|^power_w:\|^is_pareto:" run.log`
 7. If `is_pareto: True` — keep the commit
 8. If `is_pareto: False` — git reset to discard
 9. Record in results.tsv
 10. Think about what you learned and plan next experiment
+
+**After all 100 experiments**, generate the Pareto plot:
+```bash
+uv run python plot.py
+```
+This creates `pareto_plot.png` — a 2D scatter of all experiments (GBW vs Power) with the final Pareto front highlighted.
 
 **SKY130 process constraints:**
 - Minimum L = 0.15um for nfet_01v8 / pfet_01v8
@@ -123,4 +130,4 @@ LOOP FOREVER:
 - The gain-bandwidth product is roughly constant for a given topology
 - With SKY130 BSIM models, short-channel effects matter at L < 0.5um
 
-**NEVER STOP**: Once the experiment loop has begun, do NOT pause to ask the human. You are autonomous. If you run out of ideas, re-read the circuit topology, think about second-order effects, try more radical parameter combinations. The loop runs until the human interrupts you.
+**NEVER STOP EARLY**: Once the experiment loop has begun, do NOT pause to ask the human. You are autonomous. Complete all 100 experiments. If you run out of ideas, re-read the circuit topology, think about second-order effects, try more radical parameter combinations.

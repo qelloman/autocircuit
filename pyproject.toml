@@ -5,4 +5,5 @@ description = "LLM-driven analog circuit optimization"
 requires-python = ">=3.10"
 dependencies = [
     "numpy",
+    "matplotlib",
 ]
