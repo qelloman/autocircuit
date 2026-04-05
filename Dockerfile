@@ -3,49 +3,8 @@
 # Build:  docker build -t autocircuit .
 # Run:    docker run --rm -v $(pwd):/work autocircuit
 #
-# Multi-stage build to minimize final image size.
+# Uses volare to download pre-built SKY130 PDK (~2 min, no source compilation).
 
-# ============================================================
-# Stage 1: Build open_pdks (SKY130 ngspice models only)
-# ============================================================
-FROM ubuntu:22.04 AS pdk-builder
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y \
-    git \
-    python3 \
-    m4 \
-    make \
-    gcc \
-    tcsh \
-    && rm -rf /var/lib/apt/lists/*
-
-# Clone and build open_pdks — minimal install (ngspice models only, no standard cells)
-RUN cd /tmp && \
-    git clone --depth=1 https://github.com/RTimothyEdwards/open_pdks.git && \
-    cd open_pdks && \
-    ./configure --prefix=/opt/pdk \
-        --enable-sky130-pdk \
-        --disable-sc-hs-sky130 \
-        --disable-sc-ms-sky130 \
-        --disable-sc-ls-sky130 \
-        --disable-sc-lp-sky130 \
-        --disable-sc-hd-sky130 \
-        --disable-sc-hdll-sky130 \
-        --disable-sc-hvl-sky130 \
-        --disable-magic \
-        --disable-netgen \
-        --disable-irsim \
-        --disable-klayout \
-        --disable-qflow && \
-    make -j$(nproc) && \
-    make install && \
-    cd /tmp && rm -rf open_pdks
-
-# ============================================================
-# Stage 2: Final runtime image
-# ============================================================
 FROM python:3.13-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -55,17 +14,18 @@ RUN apt-get update && apt-get install -y \
     ngspice \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy PDK from builder stage
-COPY --from=pdk-builder /opt/pdk /opt/pdk
+# Install uv (Python package manager)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Install volare and download pre-built SKY130 PDK
+# Version hash from: volare ls-remote --pdk sky130
+RUN pip install --no-cache-dir volare && \
+    volare enable --pdk-root=/opt/pdk --pdk sky130 c6d73a35f524070e85faff4a6a9eef49553ebc2b
 
 # Set PDK environment variables
-ENV PDK_ROOT=/opt/pdk/share/pdk
+ENV PDK_ROOT=/opt/pdk
 ENV PDK=sky130A
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /work
 
-# Default: run optimize.py
 ENTRYPOINT ["uv", "run", "python", "optimize.py"]

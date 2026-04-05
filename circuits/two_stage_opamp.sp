@@ -13,7 +13,7 @@
 .param Ibias2_val=100u
 
 * ---- SKY130 PDK models ----
-.lib /opt/pdk/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+.lib /opt/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
 
 * ---- Supply (1.8V for SKY130) ----
 VDD vdd 0 DC 1.8
