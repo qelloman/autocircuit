@@ -19,15 +19,13 @@ CIRCUIT_DIR = os.path.join(os.path.dirname(__file__), "circuits")
 TEMPLATE_FILE = os.path.join(CIRCUIT_DIR, "two_stage_opamp.sp")
 PARETO_FILE = os.path.join(os.path.dirname(__file__), "pareto.json")
 
-# Objectives: name -> direction ("max" or "min")
+# Pareto objectives: only GBW vs Power (2D front)
 OBJECTIVES = {
-    "gain_db": "max",
     "gbw_hz": "max",
-    "pm_deg": "max",
     "power_w": "min",
 }
 
-# Hard constraints (violating these = automatic discard)
+# Hard constraints (violating these = automatic discard from Pareto)
 CONSTRAINTS = {
     "pm_deg": (">=", 45.0),     # Phase margin must be >= 45 degrees
     "gain_db": (">", 0.0),      # Must have positive gain
@@ -74,7 +72,6 @@ def _inject_params(template_text, params):
         "M7_W": "M7_W", "M7_L": "M7_L",
         "Cc": "Cc_val",
         "Ibias": "Ibias_val",
-        "Ibias2": "Ibias2_val",
     }
     lines = template_text.split("\n")
     new_lines = []
@@ -146,7 +143,7 @@ def _parse_ngspice_value(text, var_name):
 def extract_metrics(sim_output):
     """
     Parse ngspice output to extract circuit performance metrics.
-    Returns: dict with gain_db, gbw_hz, pm_deg, power_w.
+    Returns: dict with gain_db, bw_hz, gbw_hz, pm_deg, power_w.
     """
     stdout = sim_output.get("stdout", "")
     stderr = sim_output.get("stderr", "")
@@ -157,6 +154,7 @@ def extract_metrics(sim_output):
         return {"error": "simulation timeout"}
 
     dc_gain = _parse_ngspice_value(combined, "dc_gain")
+    bw3db = _parse_ngspice_value(combined, "bw3db")
     ugf = _parse_ngspice_value(combined, "ugf")
     pm = _parse_ngspice_value(combined, "pm")
     power = _parse_ngspice_value(combined, "power")
@@ -173,6 +171,7 @@ def extract_metrics(sim_output):
 
     metrics = {
         "gain_db": dc_gain if dc_gain is not None else 0.0,
+        "bw_hz": bw3db if bw3db is not None else 0.0,
         "gbw_hz": ugf if ugf is not None else 0.0,
         "pm_deg": pm_normalized,
         "power_w": power if power is not None else 0.0,
@@ -263,6 +262,7 @@ def print_summary(metrics, is_pareto):
     front = load_pareto()
     print("---")
     print(f"gain_db:       {metrics.get('gain_db', 0):.2f}")
+    print(f"bw_hz:         {metrics.get('bw_hz', 0):.2e}")
     print(f"gbw_hz:        {metrics.get('gbw_hz', 0):.2e}")
     print(f"pm_deg:        {metrics.get('pm_deg', 0):.2f}")
     print(f"power_w:       {metrics.get('power_w', 0):.2e}")
@@ -290,12 +290,12 @@ def print_summary(metrics, is_pareto):
 if __name__ == "__main__":
     # Quick test with default params
     default_params = {
-        "M1_W": 2, "M1_L": 0.5,       # um
-        "M3_W": 4, "M3_L": 0.5,       # um
+        "M1_W": 5, "M1_L": 1.0,       # um
+        "M3_W": 10, "M3_L": 1.0,      # um
         "M5_W": 2, "M5_L": 1,         # um
-        "M6_W": 5, "M6_L": 0.15,      # um
-        "M7_W": 10, "M7_L": 0.15,     # um
-        "Cc": 1e-12, "Ibias": 20e-6, "Ibias2": 100e-6,
+        "M6_W": 4, "M6_L": 1.0,       # um
+        "M7_W": 20, "M7_L": 0.5,      # um
+        "Cc": 1.5e-12, "Ibias": 20e-6,
     }
     print("Running test simulation...")
     sim = run_simulation(default_params)

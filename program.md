@@ -112,7 +112,7 @@ LOOP FOREVER:
 - Minimum L = 0.15um for nfet_01v8 / pfet_01v8
 - Minimum W = 0.42um
 - W/L values in optimize.py are in **um** (micrometers)
-- Ibias/Ibias2 are in **A** (amperes), Cc in **F** (farads)
+- Ibias is in **A** (amperes), Cc in **F** (farads)
 
 **Key intuitions for two-stage op-amp:**
 - Increasing M1_W (input pair width) → more gm → more gain and GBW, but more power

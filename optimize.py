@@ -27,32 +27,32 @@ from prepare import (
 # ---------------------------------------------------------------------------
 
 PARAMS = {
-    # First stage: differential input pair (NMOS)
-    "M1_W": 6,         # Input diff pair width (um)
-    "M1_L": 4.0,       # Input diff pair length (um) — long for gain
+    # First stage: NMOS differential input pair
+    "M1_W": 5,         # Input diff pair width (um)
+    "M1_L": 1.0,       # Input diff pair length (um)
 
-    # First stage: active load (PMOS current mirror)
-    "M3_W": 12,        # PMOS load width (um)
-    "M3_L": 4.0,       # PMOS load length (um)
+    # First stage: PMOS active load (current mirror)
+    "M3_W": 10,        # PMOS load width (um) — ~2× input pair
+    "M3_L": 1.0,       # PMOS load length (um)
 
-    # Tail current source
+    # Bias mirror / tail current source (M0 & M5 share this sizing)
     "M5_W": 2,         # Tail current source width (um)
-    "M5_L": 4,         # Tail current source length (um)
+    "M5_L": 1,         # Tail current source length (um)
 
-    # Second stage: NMOS driver
-    "M6_W": 3,         # Second stage NMOS width (um) — small
-    "M6_L": 1.0,       # Second stage NMOS length (um)
+    # Second stage: NMOS current sink (load, mirrors Iref via nbias)
+    # I_M6 = Ibias × (M6_W/M6_L) / (M5_W/M5_L) = 20u × (4/1)/(2/1) = 40uA
+    "M6_W": 4,         # Second stage NMOS current sink width (um)
+    "M6_L": 1.0,       # Second stage NMOS current sink length (um)
 
-    # Second stage: PMOS load (sizing for reference, current set by Ibias2)
-    "M7_W": 10,        # Second stage PMOS width (um) — unused with ideal I7
-    "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
+    # Second stage: PMOS common-source driver (gate driven by 1st stage output)
+    "M7_W": 20,        # Second stage PMOS driver width (um)
+    "M7_L": 0.5,       # Second stage PMOS driver length (um)
 
     # Compensation
-    "Cc": 2e-12,       # Miller compensation capacitor (F) — large for stability
+    "Cc": 2.5e-12,     # Miller compensation capacitor (F) — 2.5pF
 
     # Bias
-    "Ibias": 2e-6,     # First stage bias current (A) — extreme low
-    "Ibias2": 10e-6,   # Second stage bias current (A) — extreme low
+    "Ibias": 20e-6,    # Reference bias current (A) — 20μA
 }
 
 # ---------------------------------------------------------------------------
