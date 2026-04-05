@@ -38,20 +38,27 @@ CONSTRAINTS = {
 # ---------------------------------------------------------------------------
 
 def _format_spice_value(val):
-    """Convert Python float to SPICE-compatible string."""
+    """Convert Python float to SPICE-compatible string.
+
+    For SKY130: W/L params are in um (plain numbers like 2, 0.5).
+    For current/capacitance: use SI suffixes (u, p, etc).
+    """
     abs_val = abs(val)
-    if abs_val >= 1e-3 and abs_val < 1:
-        return f"{val*1e3:.4g}m"
-    elif abs_val >= 1e-6 and abs_val < 1e-3:
-        return f"{val*1e6:.4g}u"
-    elif abs_val >= 1e-9 and abs_val < 1e-6:
-        return f"{val*1e9:.4g}n"
-    elif abs_val >= 1e-12 and abs_val < 1e-9:
-        return f"{val*1e12:.4g}p"
-    elif abs_val >= 1e-15 and abs_val < 1e-12:
-        return f"{val*1e15:.4g}f"
-    elif abs_val == 0:
+    if abs_val == 0:
         return "0"
+    elif abs_val >= 0.01:
+        # Plain number (for W/L in um, or any value >= 0.01)
+        return f"{val:.6g}"
+    elif abs_val >= 1e-3:
+        return f"{val*1e3:.4g}m"
+    elif abs_val >= 1e-6:
+        return f"{val*1e6:.4g}u"
+    elif abs_val >= 1e-9:
+        return f"{val*1e9:.4g}n"
+    elif abs_val >= 1e-12:
+        return f"{val*1e12:.4g}p"
+    elif abs_val >= 1e-15:
+        return f"{val*1e15:.4g}f"
     else:
         return f"{val:.6g}"
 
@@ -283,12 +290,12 @@ def print_summary(metrics, is_pareto):
 if __name__ == "__main__":
     # Quick test with default params
     default_params = {
-        "M1_W": 10e-6, "M1_L": 1e-6,
-        "M3_W": 20e-6, "M3_L": 1e-6,
-        "M5_W": 10e-6, "M5_L": 1e-6,
-        "M6_W": 5e-6, "M6_L": 0.5e-6,
-        "M7_W": 10e-6, "M7_L": 0.5e-6,
-        "Cc": 2e-12, "Ibias": 20e-6, "Ibias2": 200e-6,
+        "M1_W": 2, "M1_L": 0.5,       # um
+        "M3_W": 4, "M3_L": 0.5,       # um
+        "M5_W": 2, "M5_L": 1,         # um
+        "M6_W": 5, "M6_L": 0.15,      # um
+        "M7_W": 10, "M7_L": 0.15,     # um
+        "Cc": 1e-12, "Ibias": 20e-6, "Ibias2": 100e-6,
     }
     print("Running test simulation...")
     sim = run_simulation(default_params)

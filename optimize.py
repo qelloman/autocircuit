@@ -2,7 +2,9 @@
 Circuit optimization parameters — the file the LLM modifies.
 This is the analog circuit equivalent of autoresearch's train.py.
 
-Usage: uv run optimize.py
+Usage:
+  Local:  uv run optimize.py
+  Docker: docker run --rm -v $(pwd):/work autocircuit
 """
 
 from prepare import (
@@ -16,35 +18,41 @@ from prepare import (
 
 # ---------------------------------------------------------------------------
 # Circuit parameters (modify these to experiment)
+#
+# SKY130 PDK notes:
+#   - W/L units are in um (micrometers) — e.g., M1_W=2 means 2um
+#   - Minimum L for sky130_fd_pr__nfet_01v8 is 0.15um
+#   - Minimum W is 0.42um
+#   - Current/capacitance values use SI units (A, F)
 # ---------------------------------------------------------------------------
 
 PARAMS = {
     # First stage: differential input pair (NMOS)
-    "M1_W": 10e-6,     # Input diff pair width (m)
-    "M1_L": 1e-6,      # Input diff pair length (m)
+    "M1_W": 2,         # Input diff pair width (um)
+    "M1_L": 0.5,       # Input diff pair length (um)
 
     # First stage: active load (PMOS current mirror)
-    "M3_W": 20e-6,     # PMOS load width (m)
-    "M3_L": 1e-6,      # PMOS load length (m)
+    "M3_W": 4,         # PMOS load width (um)
+    "M3_L": 0.5,       # PMOS load length (um)
 
     # Tail current source
-    "M5_W": 10e-6,     # Tail current source width (m)
-    "M5_L": 1e-6,      # Tail current source length (m)
+    "M5_W": 2,         # Tail current source width (um)
+    "M5_L": 1,         # Tail current source length (um)
 
     # Second stage: NMOS driver
-    "M6_W": 5e-6,      # Second stage NMOS width (m)
-    "M6_L": 0.5e-6,    # Second stage NMOS length (m)
+    "M6_W": 5,         # Second stage NMOS width (um)
+    "M6_L": 0.15,      # Second stage NMOS length (um)
 
     # Second stage: PMOS load (sizing for reference, current set by Ibias2)
-    "M7_W": 10e-6,     # Second stage PMOS width (m) — unused with ideal I7
-    "M7_L": 0.5e-6,    # Second stage PMOS length (m) — unused with ideal I7
+    "M7_W": 10,        # Second stage PMOS width (um) — unused with ideal I7
+    "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 2e-12,       # Miller compensation capacitor (F)
+    "Cc": 1e-12,       # Miller compensation capacitor (F)
 
     # Bias
     "Ibias": 20e-6,    # First stage bias current (A)
-    "Ibias2": 200e-6,  # Second stage bias current (A)
+    "Ibias2": 100e-6,  # Second stage bias current (A)
 }
 
 # ---------------------------------------------------------------------------

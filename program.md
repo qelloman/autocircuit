@@ -13,7 +13,7 @@ To set up a new experiment, work with the user to:
    - `prepare.py` — fixed constants, ngspice wrapper, metric extraction, Pareto front management. Do not modify.
    - `optimize.py` — the file you modify. Circuit parameters.
    - `circuits/two_stage_opamp.sp` — the circuit netlist template. Do not modify.
-4. **Verify ngspice exists**: Run `ngspice --version` to confirm it's installed.
+4. **Verify Docker image exists**: Run `docker images autocircuit` to confirm the image is built. If not, run `docker build -t autocircuit .` (takes ~30 min first time).
 5. **Initialize results.tsv**: Create `results.tsv` with just the header row. The baseline will be recorded after the first run.
 6. **Confirm and go**: Confirm setup looks good.
 
@@ -21,7 +21,13 @@ Once you get confirmation, kick off the experimentation.
 
 ## Experimentation
 
-Each experiment runs a single ngspice simulation (takes seconds, not minutes). You launch it simply as: `uv run optimize.py`.
+Each experiment runs a single ngspice simulation (takes seconds, not minutes). You launch it as:
+
+```bash
+docker run --rm -v $(pwd):/work autocircuit
+```
+
+This mounts the current directory into the container, so your changes to `optimize.py` are picked up automatically. Results (pareto.json, stdout) are written back to the host.
 
 **What you CAN do:**
 - Modify `optimize.py` — this is the only file you edit. Change the PARAMS dictionary values.
@@ -95,12 +101,18 @@ LOOP FOREVER:
    - Is there a region of the Pareto front that's sparse?
 3. Modify `optimize.py` PARAMS with your hypothesis
 4. git commit
-5. Run: `uv run optimize.py > run.log 2>&1`
+5. Run: `docker run --rm -v $(pwd):/work autocircuit > run.log 2>&1`
 6. Read results: `grep "^gain_db:\|^gbw_hz:\|^pm_deg:\|^power_w:\|^is_pareto:" run.log`
 7. If `is_pareto: True` — keep the commit
 8. If `is_pareto: False` — git reset to discard
 9. Record in results.tsv
 10. Think about what you learned and plan next experiment
+
+**SKY130 process constraints:**
+- Minimum L = 0.15um for nfet_01v8 / pfet_01v8
+- Minimum W = 0.42um
+- W/L values in optimize.py are in **um** (micrometers)
+- Ibias/Ibias2 are in **A** (amperes), Cc in **F** (farads)
 
 **Key intuitions for two-stage op-amp:**
 - Increasing M1_W (input pair width) → more gm → more gain and GBW, but more power
@@ -109,5 +121,6 @@ LOOP FOREVER:
 - Increasing Ibias → more power, but potentially better performance
 - Length affects output resistance → longer L = more gain but slower
 - The gain-bandwidth product is roughly constant for a given topology
+- With SKY130 BSIM models, short-channel effects matter at L < 0.5um
 
 **NEVER STOP**: Once the experiment loop has begun, do NOT pause to ask the human. You are autonomous. If you run out of ideas, re-read the circuit topology, think about second-order effects, try more radical parameter combinations. The loop runs until the human interrupts you.
