@@ -2,9 +2,15 @@
 
 *What if an AI agent could design analog circuits while you sleep?*
 
-Give an AI agent a real circuit topology and a SPICE simulator, and let it experiment autonomously. It tweaks transistor sizes, runs ngspice, checks if the result improved the Pareto front, keeps or discards, and repeats. You wake up in the morning to a set of optimized designs spanning the gain-bandwidth-power trade-off space.
-
 Inspired by [@karpathy's autoresearch](https://github.com/karpathy/autoresearch) — the same autonomous experiment loop, applied to analog circuit optimization instead of LLM training.
+
+Autoresearch seems like parameter optimization process based on LLM's log analysis and exploration capabilities.
+
+Do you know what can use the parameter optimization too? Analog circuit optimization!
+
+Give an AI agent a circuit topology and a SPICE simulator, and let it experiment autonomously. It tweaks transistor sizes, runs ngspice, checks if the result improved the Pareto front, keeps or discards, and repeats. You wake up in the morning to a set of optimized designs spanning the gain-bandwidth-power trade-off space.
+
+![Pareto Plot — GBW vs Power after 100 experiments](pareto_plot.png)
 
 ## How it works
 
