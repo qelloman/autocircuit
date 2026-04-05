@@ -28,31 +28,31 @@ from prepare import (
 
 PARAMS = {
     # First stage: differential input pair (NMOS)
-    "M1_W": 6,         # Input diff pair width (um)
-    "M1_L": 2.0,       # Input diff pair length (um) — L=2um for gain
+    "M1_W": 10,        # Input diff pair width (um) — very wide for gm
+    "M1_L": 3.0,       # Input diff pair length (um) — L=3um for max gain
 
     # First stage: active load (PMOS current mirror)
-    "M3_W": 12,        # PMOS load width (um)
-    "M3_L": 2.0,       # PMOS load length (um)
+    "M3_W": 20,        # PMOS load width (um) — 2x M1_W
+    "M3_L": 3.0,       # PMOS load length (um) — match M1_L
 
     # Tail current source
     "M5_W": 4,         # Tail current source width (um)
-    "M5_L": 2,         # Tail current source length (um)
+    "M5_L": 3,         # Tail current source length (um) — long
 
     # Second stage: NMOS driver
-    "M6_W": 15,        # Second stage NMOS width (um) — wide for fast 2nd pole
-    "M6_L": 0.15,      # Second stage NMOS length (um)
+    "M6_W": 5,         # Second stage NMOS width (um)
+    "M6_L": 0.5,       # Second stage NMOS length (um)
 
     # Second stage: PMOS load (sizing for reference, current set by Ibias2)
     "M7_W": 10,        # Second stage PMOS width (um) — unused with ideal I7
     "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 0.3e-12,     # Miller compensation capacitor (F) — aggressive
+    "Cc": 1.5e-12,     # Miller compensation capacitor (F)
 
     # Bias
-    "Ibias": 40e-6,    # First stage bias current (A)
-    "Ibias2": 100e-6,  # Second stage bias current (A)
+    "Ibias": 10e-6,    # First stage bias current (A) — low for power
+    "Ibias2": 50e-6,   # Second stage bias current (A)
 }
 
 # ---------------------------------------------------------------------------
