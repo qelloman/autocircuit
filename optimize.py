@@ -28,12 +28,12 @@ from prepare import (
 
 PARAMS = {
     # First stage: differential input pair (NMOS)
-    "M1_W": 2,         # Input diff pair width (um)
-    "M1_L": 0.5,       # Input diff pair length (um)
+    "M1_W": 4,         # Input diff pair width (um) — wider for more gm
+    "M1_L": 1.0,       # Input diff pair length (um) — longer for higher ro
 
     # First stage: active load (PMOS current mirror)
-    "M3_W": 4,         # PMOS load width (um)
-    "M3_L": 0.5,       # PMOS load length (um)
+    "M3_W": 8,         # PMOS load width (um) — wider to match
+    "M3_L": 1.0,       # PMOS load length (um) — longer for higher ro
 
     # Tail current source
     "M5_W": 2,         # Tail current source width (um)
@@ -48,10 +48,10 @@ PARAMS = {
     "M7_L": 0.15,      # Second stage PMOS length (um) — unused with ideal I7
 
     # Compensation
-    "Cc": 0.5e-12,     # Miller compensation capacitor (F) — halved for more GBW
+    "Cc": 1e-12,       # Miller compensation capacitor (F)
 
     # Bias
-    "Ibias": 40e-6,    # First stage bias current (A) — doubled for more gm
+    "Ibias": 20e-6,    # First stage bias current (A)
     "Ibias2": 100e-6,  # Second stage bias current (A)
 }
 
