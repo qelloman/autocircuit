@@ -28,11 +28,11 @@ from prepare import (
 
 PARAMS = {
     # First stage: differential input pair (NMOS)
-    "M1_W": 12,        # Input diff pair width (um) — wider than Exp11
-    "M1_L": 3.0,       # Input diff pair length (um) — L=3um for high gain
+    "M1_W": 15,        # Input diff pair width (um) — wider for more gm
+    "M1_L": 3.0,       # Input diff pair length (um) — L=3um
 
     # First stage: active load (PMOS current mirror)
-    "M3_W": 24,        # PMOS load width (um) — 2x M1_W
+    "M3_W": 30,        # PMOS load width (um) — 2x M1_W
     "M3_L": 3.0,       # PMOS load length (um)
 
     # Tail current source
@@ -51,8 +51,8 @@ PARAMS = {
     "Cc": 1.5e-12,     # Miller compensation capacitor (F)
 
     # Bias
-    "Ibias": 15e-6,    # First stage bias current (A) — slightly more than Exp11
-    "Ibias2": 60e-6,   # Second stage bias current (A)
+    "Ibias": 12e-6,    # First stage bias current (A) — sweet spot for gm/Id
+    "Ibias2": 50e-6,   # Second stage bias current (A)
 }
 
 # ---------------------------------------------------------------------------
