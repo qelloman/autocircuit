@@ -116,6 +116,12 @@ pyproject.toml            — Python dependencies
 - **More objectives**: Add metrics to `OBJECTIVES` dict in `prepare.py` (e.g., CMRR, slew rate, noise).
 - **BO/RL inner loop**: The natural next step — have the LLM choose between Bayesian optimization and RL strategies for the inner optimization loop while managing the outer Pareto exploration.
 
+## References
+
+- [Open PDKs](https://github.com/rtimothyedwards/open_pdks) — install scripts for open-source PDKs (SKY130, GF180MCU, etc.)
+- [ngspice](https://github.com/ngspice/ngspice) — open-source SPICE circuit simulator
+- [Miller-Compensated Two-Stage OPAMP using SKY130 PDK](https://github.com/chennakeshavadasa/Miller-Compensated-Two-stage-OPAMP-using-SKY130PDK) — reference design for two-stage op-amp on SKY130
+
 ## License
 
 MIT
